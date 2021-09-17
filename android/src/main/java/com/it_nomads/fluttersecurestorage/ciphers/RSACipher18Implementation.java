@@ -112,10 +112,18 @@ class RSACipher18Implementation {
     }
 
     private void createRSAKeysIfNeeded(Context context) throws Exception {
-        KeyStore ks = KeyStore.getInstance(KEYSTORE_PROVIDER_ANDROID);
-        ks.load(null);
+        
+        Key privateKey = null;
+        
+        try {
+            KeyStore ks = KeyStore.getInstance(KEYSTORE_PROVIDER_ANDROID);
+            ks.load(null);
+            privateKey = ks.getKey(KEY_ALIAS, null);
+        } catch (Exception ex){
+            //loading an existing key may fail -> try creating a new key
+            privateKey = null;
+        }
 
-        Key privateKey = ks.getKey(KEY_ALIAS, null);
         if (privateKey == null) {
             createKeys(context);
         }
